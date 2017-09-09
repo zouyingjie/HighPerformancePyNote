@@ -1,24 +1,14 @@
 # -*- coding: utf-8 -*-
 import time
 import line_profiler
-from memory_profiler import profile
+# from memory_profiler import profile
 from io import StringIO
+import matplotlib
 
 x1, x2, y1, y2 = -1.8, 1.8, -1.8, 1.8
 
 c_real, c_imag = -0.62772, -0.42193
 
-def launch_memory_usage_server(port=8080):
-    import cherrypy
-    import dowser
-
-    cherrypy.tree.mount(dowser.Root())
-    cherrypy.config.update({
-        "environment": 'embedded',
-        "server.socket_port": port
-    })
-    cherrypy.engine.start()
-@profile
 def calc_pure_python(desired_width, max_iterations):
     x_step = (float(x2 - x1) / float(desired_width))
     y_step = (float(y1 - y2) / float(desired_width))
@@ -42,7 +32,6 @@ def calc_pure_python(desired_width, max_iterations):
             zs.append(complex(xcoord, ycoord))
             cs.append(complex(c_real, c_imag))
 
-    launch_memory_usage_server()
 
     print("Length of x:", len(x))
     print("total elements:", len(zs))
@@ -53,7 +42,7 @@ def calc_pure_python(desired_width, max_iterations):
     print(calculate_z_serial_purepython.__name__ + 'took', secs, "seconds")
     # assert sum(out_put) == 33219980
 
-@profile
+# @profile
 def calculate_z_serial_purepython(maxiter, zs, cs):
     output = [0] * len(zs)
     for i in range(len(zs)):
@@ -87,6 +76,9 @@ if __name__ == "__main__":
 # -s 导入要执行的模块，-n 指定循环次数，-r 指定重复次数。两者的作用在于: timeit 会对语句循环执行 n 次，并计算平均值作为一个结果，然后
 # 在重复 r 次选出最好的结果。不指定的话墨迹人是 循环 10 次 重复 5 次
 # python3.6 -m timeit -n 5 -r 5 -s "import demo01" "demo01.calc_pure_python(desired_width=1000, max_iterations=300)"
+
+# 也可以在 ipython 中使用: %timeit: %timeit l = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+# 如果只是简单的查看某条单独语句的执行时间，使用 %timeit 非常方便
 
 # 3. 使用 Unix 的系统 time 命令
 # /usr/bin/time -p python demo01.py
